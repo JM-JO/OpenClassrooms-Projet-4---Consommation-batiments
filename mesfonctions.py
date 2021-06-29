@@ -3,14 +3,6 @@ import matplotlib.pyplot as plt
 from scipy.stats import linregress as reg_lin
 
 
-def test1():
-    print("hello")
-    print(np.sqrt(100000))
-    print("hello2")
-    plt.vlines(1, 2, 3)
-    plt.show()
-
-
 def scatter_plot(ser_x,
                  ser_y,
                  min_x=None,
@@ -100,7 +92,7 @@ def scatter_plot(ser_x,
                linewidth=0.6)
 
     plt.annotate(
-        text="Régression linéaire : y = {0:0.4f}*x + {1:0.4f}, R²={2:0.2f}".
+        text="Régression linéaire : y = {0:0.4f}*x + {1:0.4f}, R²={2:0.3f}".
         format(slope, intercept, r * r),
         xy=(min_x + largeur_x / 20, max_y - largeur_y / 20),
         color='red',
@@ -219,5 +211,46 @@ def display_scree_plot(pca):
                 c='g',
                 linewidth=0.3)  # critère de Kaiser
     plt.show(block=False)
+    
+    
+def arrondi(x, chiffres=3, puissance10=None):
+    """ Arrondit un nombre et gère les chiffres significatifs.
+    Args :
+    - x : nombre à arrondir.
+    - chiffres : chiffres significatifs voulus.
+    - puissance10 : x est exprimé en puissance 10 de cet argument.
+    Returns :
+    - le nombre arrondi.
+    Examples:
+    - arrondi(123.456, chiffres=2) retourne 120.
+    - arrondi(0.0123456, chiffres=4) retourne 0.01234.
+    - arrondi(123.456, puissance10=2) retourne le string 1.2e2.
+    """
+    if type(x) is not float:
+        x = float(x)
+    if x != 0:
+        y = round(x, -int(np.floor(np.log10(abs(x)))-chiffres+1))
+    else:
+        y = 0
+    if y >= np.power(10, chiffres-1):
+        y = int(y) # on supprime le .0 de tous les floats en Python
+    if puissance10 is not None:
+        y = "{0:.2f}".format(x/np.power(10, puissance10)) + "e" + str(puissance10)
+    return y
+
+
+def display_scores(scores, chiffres=3, puissance10=None):
+    """ Transforme la liste de scores retournés par cross_val_score() en valeurs simples à lire.
+    Args :
+    - scores : valeur fournie par cross_val_score().
+    - chiffres : le nombre de chiffres significatifs affichés.
+    Returns : 
+    - tous les scores de la validation croisée, leur moyenne, leur écart-type
+    """
+    print("Scores: ", end='')
+    for x in scores:
+        print(arrondi(x, chiffres, puissance10), end=' ')
+    print("\nMean:", arrondi(scores.mean(), chiffres, puissance10))
+    print("Standard deviation:", arrondi(scores.std(ddof=1), chiffres, puissance10))
     
     
