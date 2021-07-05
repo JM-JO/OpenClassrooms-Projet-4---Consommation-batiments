@@ -254,3 +254,31 @@ def display_scores(scores, chiffres=3, puissance10=None):
     print("Standard deviation:", arrondi(scores.std(ddof=1), chiffres, puissance10))
     
     
+def barh_plot_coefs(x_array, effectif_array):
+    """Retourne un horizontal bar plot pour une série pandas.
+    Args :
+    - x_array : série avec les longueurs des barres tracées.
+    - effectif_array : série avec les effectifs.
+    Returns : 
+    - horizontal bar plot.
+    """
+    # Tracé histogramme
+    y_array = range(len(x_array))
+    labels = x_array.index
+    plt.style.use('seaborn')
+    fig = plt.figure(figsize=(30, 20), edgecolor='black', linewidth=4)
+    ax = fig.add_subplot(111)
+    plt.title('Coefficients des différents types de surface (et leur effectif)', size=30)
+    plt.xlabel('Coefficients', size=25)
+    ax.barh(y_array, x_array, height=0.8, color='lightblue')
+    plt.axis(ymin=-0.5, ymax=len(x_array)-0.5)
+    plt.xticks(size=18)
+    ax.xaxis.get_offset_text().set_size(18)  # taille du multiplicateur (1e7) de coefficients le cas échéants
+    plt.yticks([ ])
+    plt.tick_params(bottom=True, top=True, direction='in')
+    # Annotations
+    zip_arrays = zip(y_array, x_array, effectif_array, labels)
+    for y, x, effectif, label in zip_arrays:
+        plt.annotate(text='  ('+str(effectif)+')  ', xy=(x,y-0.3), size=19, ha='left' if x>0 else 'right')
+        plt.annotate(text='   '+str(label)+'   ', xy=(0,y-0.3), size=19, ha='right' if x>0 else 'left')
+    plt.show()
